@@ -1,0 +1,24 @@
+# docker-compose.dev.yml
+version: '3.8'
+
+services:
+  frontend:
+    volumes:
+      - ./frontend/src:/app/src  # 핫 리로드
+    environment:
+      - REACT_APP_API_URL=http://localhost/api
+
+  backend:
+    volumes:
+      - ./backend/src:/app/src  # 개발 시 코드 변경 반영
+    environment:
+      - NODE_ENV=development
+      - DEBUG=true
+
+  postgres:
+    ports:
+      - "5432:5432"  # 개발 시 직접 접근 가능
+
+  redis:
+    ports:
+      - "6379:6379"  # 개발 시 직접 접근 가능

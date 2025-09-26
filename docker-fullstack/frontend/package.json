@@ -1,0 +1,19 @@
+{
+  "name": "fullstack-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.6.0",
+    "serve": "^14.2.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "serve": "serve -s build -l 3000"
+  },
+  "devDependencies": {
+    "react-scripts": "5.0.1"
+  }
+}

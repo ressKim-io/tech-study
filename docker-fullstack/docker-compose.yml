@@ -1,0 +1,69 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # Frontend Service
+  frontend:
+    build: ./frontend
+    container_name: fullstack-frontend
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # Backend Service  
+  backend:
+    build: ./backend
+    container_name: fullstack-backend
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - app-network
+
+  # Database Service
+  postgres:
+    image: postgres:15-alpine
+    container_name: fullstack-db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+  # Cache Service
+  redis:
+    image: redis:7-alpine
+    container_name: fullstack-cache
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+  # Reverse Proxy
+  nginx:
+    build: ./nginx
+    container_name: fullstack-proxy
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge
